@@ -64,7 +64,7 @@ function speakText(text, onEnd) {
     u.lang = "en-IN"; // fallback language
   }
 
-  u.rate = 0.95;
+  u.rate = 0.8;
   u.onend = onEnd;
   speechSynthesis.speak(u);
 }
