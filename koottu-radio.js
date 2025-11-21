@@ -141,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <button onclick="startRadio()" style="padding:7px 14px;">▶ Play</button>
       <button onclick="pauseRadio()" style="padding:7px 14px;">⏸ Pause</button>
       <button onclick="resumeRadio()" style="padding:7px 14px;">🔊 Resume</button>
+      <button onclick="playNextPost()" style="padding:7px 14px;">>Play</button>
       <button onclick="stopRadio()" style="padding:7px 14px;">⏹ Stop</button>
 
       <button id="tamil-toggle" onclick="toggleTamilVoice()"
