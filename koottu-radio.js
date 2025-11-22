@@ -1,159 +1,95 @@
-/*  Koottu Pirarthanai - Tamil Blog Radio Player (User Toggle)  */
+// ✅ KOOTTU RADIO - FIXED FOR INDIA AND ALL ANDROID PHONES
+// This version waits for Tamil voices to load and reads full blog without stopping.
 
-const BLOG_URL = "https://koottuppirarthanai.blogspot.com";
-const MAX_POSTS = 40;
-
-let posts = [];
-let current = 0;
-let speaking = false;
-
-let tamilVoice = null;
-let tamilEnabled = false; // ✅ default OFF, user can turn ON
-
-// ----- Voice Picker -----
-function pickTamilVoice() {
+function getTamilVoice() {
   const voices = speechSynthesis.getVoices();
-
-  tamilVoice =
-    voices.find(v => v.lang === "ta-IN" && /google/i.test(v.name)) ||
+  return (
     voices.find(v => v.lang === "ta-IN") ||
     voices.find(v => v.lang.startsWith("ta")) ||
-    null;
-
-  const status = document.getElementById("radio-status");
-  if (tamilEnabled && !tamilVoice && status) {
-    status.innerText =
-      "⚠️ Tamil voice not found on this device. Please install Tamil Text-to-Speech in phone settings.";
-  }
-}
-speechSynthesis.onvoiceschanged = pickTamilVoice;
-pickTamilVoice();
-
-// ----- Load Posts from Blogger Feed -----
-function handleFeed(data) {
-  posts = (data.feed.entry || []).map(e => {
-    const title = e.title.$t;
-    const content = (e.content ? e.content.$t : "")
-      .replace(/<[^>]*>?/gm, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-    return { title, text: content };
-  });
-
-  const status = document.getElementById("radio-status");
-  if (status) {
-    status.innerText = `Loaded ${posts.length} posts. Press Play.`;
-  }
+    voices[0]
+  );
 }
 
-// JSON-in-script (CORS-free)
-(function loadPosts() {
-  const s = document.createElement("script");
-  s.src = `${BLOG_URL}/feeds/posts/default?alt=json-in-script&max-results=${MAX_POSTS}&callback=handleFeed`;
-  document.body.appendChild(s);
-})();
+function splitIntoChunks(text, maxLen = 180) {
+  const clean = text.replace(/\n+/g, " ").trim();
+  const sentences = clean.split(/(?<=[.!?।])\s+/);
 
-// ----- Speak Text -----
-function speakText(text, onEnd) {
-  const u = new SpeechSynthesisUtterance(text);
+  const chunks = [];
+  let buf = "";
 
-  if (tamilEnabled && tamilVoice) {
-    u.lang = "ta-IN";
-    u.voice = tamilVoice;
-  } else {
-    u.lang = "en-IN"; // fallback language
+  for (const s of sentences) {
+    if ((buf + " " + s).length > maxLen) {
+      if (buf.trim()) chunks.push(buf.trim());
+      buf = s;
+    } else {
+      buf += " " + s;
+    }
   }
-
-  u.rate = 0.8;
-  u.onend = onEnd;
-  speechSynthesis.speak(u);
+  if (buf.trim()) chunks.push(buf.trim());
+  return chunks;
 }
 
-// ----- Radio Controls -----
-function startRadio() {
-  if (!posts.length) {
-    document.getElementById("radio-status").innerText =
-      "Posts not loaded yet. Wait a few seconds.";
-    return;
-  }
-  if (speaking) return;
-
-  speaking = true;
-  current = 0;
-  playNextPost();
-}
-
-function playNextPost() {
-  if (!speaking || current >= posts.length) {
-    document.getElementById("radio-status").innerText =
-      "📻 Radio finished reading all posts ✔️";
-    speaking = false;
-    return;
-  }
-
-  const p = posts[current];
-  document.getElementById("radio-status").innerText =
-    `📖 Now reading (${current + 1}/${posts.length}): ${p.title}`;
-
-  speakText(p.title, () => {
-    speakText(p.text, () => {
-      current++;
-      playNextPost();
-    });
-  });
-}
-
-function pauseRadio() { speechSynthesis.pause(); }
-function resumeRadio() { speechSynthesis.resume(); }
-function stopRadio() {
-  speaking = false;
+async function speakTextSafely(fullText) {
   speechSynthesis.cancel();
-  document.getElementById("radio-status").innerText = "Radio stopped.";
-}
 
-// ----- Tamil Toggle -----
-function toggleTamilVoice() {
-  tamilEnabled = !tamilEnabled;
-  pickTamilVoice();
-
-  const btn = document.getElementById("tamil-toggle");
-  if (btn) {
-    btn.innerText = tamilEnabled ? "தமிழ் குரல்: ON" : "தமிழ் குரல்: OFF";
+  // ✅ Wait for voices (India Android fix)
+  if (!speechSynthesis.getVoices().length) {
+    await new Promise(res => {
+      speechSynthesis.onvoiceschanged = () => res();
+      setTimeout(res, 1500); // backup wait
+    });
   }
 
-  const status = document.getElementById("radio-status");
-  if (status) {
-    status.innerText = tamilEnabled
-      ? "Tamil voice ON. Press Play."
-      : "Tamil voice OFF. Press Play.";
+  const voice = getTamilVoice();
+  const chunks = splitIntoChunks(fullText);
+
+  let i = 0;
+
+  function speakNext() {
+    if (i >= chunks.length) return;
+
+    const u = new SpeechSynthesisUtterance(chunks[i]);
+    u.lang = "ta-IN";
+    if (voice) u.voice = voice;
+    u.rate = 1;
+    u.pitch = 1;
+
+    u.onend = () => {
+      i++;
+      speakNext();
+    };
+
+    u.onerror = () => {
+      i++;
+      speakNext(); // ✅ never stop fully
+    };
+
+    speechSynthesis.speak(u);
   }
+
+  speakNext();
 }
 
-// ----- Mount Player UI -----
-document.addEventListener("DOMContentLoaded", () => {
-  const box = document.getElementById("blog-radio");
-  if (!box) return;
+// ✅ Extract blog text (simple safe version)
+function extractBlogText() {
+  const post = document.querySelector(".post-body, article, .entry-content");
+  if (!post) return "";
+  return post.innerText || post.textContent || "";
+}
 
-  box.innerHTML = `
-    <div style="font-family:Arial; background:#111; color:#fff; padding:14px; border-radius:10px;">
-      <h3 style="margin:0 0 10px 0;">📻 Blog Radio – Koottu Pirarthanai</h3>
+// ✅ Play button binding (must exist on page)
+function initKoottuRadio() {
+  const btn = document.getElementById("radioPlayBtn");
+  if (!btn) return;
 
-      <button onclick="startRadio()" style="padding:7px 14px;">▶ Play</button>
-      <button onclick="pauseRadio()" style="padding:7px 14px;">⏸ Pause</button>
-      <button onclick="resumeRadio()" style="padding:7px 14px;">🔊 Resume</button>
-      <button onclick="playNextPost()" style="padding:7px 14px;">>Play</button>
-      <button onclick="stopRadio()" style="padding:7px 14px;">⏹ Stop</button>
+  btn.addEventListener("click", () => {
+    const text = extractBlogText();
+    if (!text.trim()) {
+      alert("இந்த பதிவில் வாசிக்கத் தேவையான தகவல் இல்லை.");
+      return;
+    }
+    speakTextSafely(text);
+  });
+}
 
-      <button id="tamil-toggle" onclick="toggleTamilVoice()"
-        style="padding:7px 14px; margin-left:6px; background:#0a7; color:#fff; border:0; border-radius:6px; cursor:pointer;">
-        தமிழ் குரல்: OFF
-      </button>
-
-      <p id="radio-status" style="margin-top:12px; font-size:14px;">Loading posts…</p>
-
-      <p style="margin-top:8px; font-size:12px; opacity:0.8;">
-        💡 Tamil voice works if your phone has Tamil Text-to-Speech installed (Android: Settings → Text-to-Speech → Install Tamil voice).
-      </p>
-    </div>
-  `;
-});
+document.addEventListener("DOMContentLoaded", initKoottuRadio);
