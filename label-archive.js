@@ -74,6 +74,10 @@
   }
 
   async function build() {
+    const uniqueLabels = new Set();
+allPosts.forEach(p => p.cats.forEach(c => uniqueLabels.add(c)));
+console.log("ALL LABELS FROM FEED:", Array.from(uniqueLabels));
+
     const box = document.getElementById("label-archive");
     if (!box) return;
     box.innerHTML = "Loading…";
