@@ -14,8 +14,8 @@
     {
       // IMPORTANT: change this "key" to whatever the label
       // really is in the 2-11-2025 post (see step 2 below)
-      key: "02.11.2025 - திருஅண்ணாமலை",
-      title: "02.11.2025 - திருவண்ணாமலை"
+      key: "02-11-2025-திருஅண்ணாமலை",
+      title: "02-11-2025 - திருஅண்ணாமலை"
     },
     {
       key: "05-10-2025 - மதுரை",
