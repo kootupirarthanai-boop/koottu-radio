@@ -12,9 +12,9 @@
       title: "31-08-2025 - திருஅண்ணாமலை"
     },
     {
-      // IMPORTANT: change this "key" to whatever the label
-      // really is in the 2-11-2025 post (see step 2 below)
+      // EXACT Blogger label text (no spaces before/after last dash)
       key: "02-11-2025-திருஅண்ணாமலை",
+      // Nicely formatted title to show in the widget
       title: "02-11-2025 - திருஅண்ணாமலை"
     },
     {
@@ -22,7 +22,7 @@
       title: "05-10-2025 - மதுரை"
     },
     {
-      key: "27-7-2025  - பாபநாசம்",
+      key: "27-7-2025  - பாபநாசம்", // note the double space before the dash
       title: "27-7-2025  - பாபநாசம்"
     }
   ];
@@ -58,15 +58,18 @@
     return html;
   }
 
+  // Load all posts via Blogger JSON-in-script
   function loadAllPosts() {
     return new Promise(resolve => {
       const cb = "__kp_all_" + Math.random().toString(36).slice(2);
+
       window[cb] = data => {
         const entries = (data.feed && data.feed.entry) ? data.feed.entry : [];
         resolve(entries);
         try { delete window[cb]; } catch (e) {}
         s.remove();
       };
+
       const s = document.createElement("script");
       s.src = `${BLOG_URL}/feeds/posts/default?alt=json-in-script&max-results=${MAX_POSTS}&callback=${cb}`;
       document.body.appendChild(s);
@@ -74,10 +77,6 @@
   }
 
   async function build() {
-    const uniqueLabels = new Set();
-allPosts.forEach(p => p.cats.forEach(c => uniqueLabels.add(c)));
-console.log("ALL LABELS FROM FEED:", Array.from(uniqueLabels));
-
     const box = document.getElementById("label-archive");
     if (!box) return;
     box.innerHTML = "Loading…";
@@ -92,6 +91,11 @@ console.log("ALL LABELS FROM FEED:", Array.from(uniqueLabels));
       return { title, link, cats };
     });
 
+    // Debug: log all labels we actually see from the feed
+    const uniqueLabels = new Set();
+    allPosts.forEach(p => p.cats.forEach(c => uniqueLabels.add(c)));
+    console.log("ALL LABELS FROM FEED:", Array.from(uniqueLabels));
+
     let html = "";
 
     LABEL_CONFIG.forEach(cfg => {
@@ -104,6 +108,7 @@ console.log("ALL LABELS FROM FEED:", Array.from(uniqueLabels));
     box.innerHTML = html;
   }
 
+  // Expose toggle function globally for onclick
   window.__kp_toggle = toggle;
 
   if (document.readyState === "loading") {
