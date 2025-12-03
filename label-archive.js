@@ -2,7 +2,7 @@
 
 (function () {
   const BLOG_URL = "https://koottuppirarthanai.blogspot.com";
-  const LABELS = ["திருவண்ணாமலை", "மதுரை", "பாபநாசம்"];
+  const LABELS = ["31-08-2025 - திருஅண்ணாமலை", "05-10-2025 - மதுரை", "27-7-2025  - பாபநாசம்"];
   const MAX_POSTS = 500; // enough for whole blog
 
   function toggle(id) {
