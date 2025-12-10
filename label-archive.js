@@ -18,6 +18,12 @@
       title: "02-11-2025 - திருஅண்ணாமலை"
     },
     {
+      // EXACT Blogger label text (no spaces before/after last dash)
+      key: "07-12-2025-திருஅண்ணாமலை",
+      // Nicely formatted title to show in the widget
+      title: "07-12-2025 - திருஅண்ணாமலை"
+    },
+    {
       key: "05-10-2025 - மதுரை",
       title: "05-10-2025 - மதுரை"
     },
