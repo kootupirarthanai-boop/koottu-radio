@@ -19,9 +19,9 @@
     },
     {
       // EXACT Blogger label text (no spaces before/after last dash)
-      key: "07-12-2025-திருஅண்ணாமலை",
+      key: "07-12-2025-மதுரை",
       // Nicely formatted title to show in the widget
-      title: "07-12-2025 - திருஅண்ணாமலை"
+      title: "07-12-2025 - மதுரை"
     },
     {
       key: "05-10-2025 - மதுரை",
