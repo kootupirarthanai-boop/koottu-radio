@@ -33,25 +33,25 @@
       // EXACT Blogger label text (no spaces before/after last dash)
       key: "29-01-2026-திருக்கேதீஸ்வர",
       // Nicely formatted title to show in the widget
-      title: "29-01-2026-திருக்கேதீஸ்வர"
+      title: "29-01-2026 - திருக்கேதீஸ்வர"
     },
     {
       // EXACT Blogger label text (no spaces before/after last dash)
       key: "19-12-2025-இலங்கை",
       // Nicely formatted title to show in the widget
-      title: "19-12-2025-இலங்கை"
+      title: "19-12-2025 - இலங்கை"
     },
     {
       // EXACT Blogger label text (no spaces before/after last dash)
       key: "23-12-2025-இலங்கை",
       // Nicely formatted title to show in the widget
-      title: "23-12-2025-இலங்கை"
+      title: "23-12-2025 - இலங்கை"
     },
     {
       // EXACT Blogger label text (no spaces before/after last dash)
       key: "21-12-2025-இலங்கை",
       // Nicely formatted title to show in the widget
-      title: "21-12-2025-இலங்கை"
+      title: "21-12-2025 - இலங்கை"
     },
     {
       // EXACT Blogger label text (no spaces before/after last dash)
