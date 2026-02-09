@@ -13,6 +13,12 @@
     },
     {
       // EXACT Blogger label text (no spaces before/after last dash)
+      key: "07-02-2026-கொழும்புை",
+      // Nicely formatted title to show in the widget
+      title: "07-02-2026 - கொழும்புை"
+    },
+    {
+      // EXACT Blogger label text (no spaces before/after last dash)
       key: "02-11-2025-திருஅண்ணாமலை",
       // Nicely formatted title to show in the widget
       title: "02-11-2025 - திருஅண்ணாமலை"
